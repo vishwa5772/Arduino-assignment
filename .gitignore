@@ -50,3 +50,41 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+#include <elapsedMillis.h>
+
+const int lm35Pin = A0;
+const int ledPin = 13;
+
+const int below30Interval = 250;
+const int above30Interval = 500;
+
+elapsedMillis ledTimer;
+
+void setup() {
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int sensorValue = analogRead(lm35Pin);
+
+  float temperatureC = (sensorValue * 5.0 / 1024.0) * 100.0;
+
+  Serial.print("Temperature: ");
+  Serial.print(temperatureC);
+  Serial.println(" C");
+
+  if (temperatureC < 30.0) {
+    blinkLED(below30Interval);
+  } else if (temperatureC > 30.0) {
+    blinkLED(above30Interval); 
+  }
+}
+
+void blinkLED(int interval) {
+  if (ledTimer >= interval) {
+    digitalWrite(ledPin, !digitalRead(ledPin));
+    ledTimer = 0;
+  }
+}
+
